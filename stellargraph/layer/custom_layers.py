@@ -1,4 +1,4 @@
-from tensorflow.keras.backend import K 
+from tensorflow.keras import backend as K
 import tensorflow as tf
 
 class Normalization(tf.keras.layers.Layer): 
@@ -13,9 +13,11 @@ class Normalization(tf.keras.layers.Layer):
 
 class Squeeze(tf.keras.layers.Layer):
 
-    def __init__(self): 
-        super(Dense, self).__init__()
-        self.axis = 0
+    def __init__(self, inputs): 
+        super(Squeeze, self).__init__()
+        self.axis = 0 
+        self.inputs = inputs
 
-    def call(self, inputs): 
-        return K.squeeze(inputs, self.axis)
+
+    def call(self, x): 
+        return K.squeeze(self.inputs, self.axis)(x)
