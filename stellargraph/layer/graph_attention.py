@@ -25,6 +25,8 @@ from tensorflow.keras import backend as K
 from tensorflow.keras import activations, constraints, initializers, regularizers
 from tensorflow.keras.layers import Input, Layer, Dropout, LeakyReLU, Lambda, Reshape
 
+from custom_layers import Normalization, Squeeza
+
 from ..mapper import FullBatchNodeGenerator, FullBatchGenerator
 from .misc import SqueezedSparseConversion, deprecated_model_function, GatherIndices
 
@@ -762,7 +764,7 @@ class GAT:
             self._normalization = Lambda(lambda x: K.l2_normalize(x, axis=2))
 
         elif normalize is None or str(normalize).lower() in {"none", "linear"}:
-            self._normalization = Lambda(lambda x: x)
+            self._normalization = Normalization()
 
         else:
             raise ValueError(
@@ -841,7 +843,7 @@ class GAT:
 
         # Otherwise, create dense matrix from input tensor
         else:
-            Ainput = [Lambda(lambda A: K.squeeze(A, 0))(A) for A in As]
+            Ainput = [Squeeze(A) for A in As]
 
         # TODO: Support multiple matrices?
         if len(Ainput) != 1:
@@ -907,7 +909,7 @@ class GAT:
 
         # Flatten output by removing singleton batch dimension
         if x_out.shape[0] == 1:
-            self.x_out_flat = Lambda(lambda x: K.squeeze(x, 0))(x_out)
+            self.x_out_flat = Squeeze(x_out)
         else:
             self.x_out_flat = x_out
 
